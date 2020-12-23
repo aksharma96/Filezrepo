@@ -52,7 +52,14 @@ public class Upload extends HttpServlet {
 			 context=getServletContext();
 			 
 			Properties prop = new Properties();
+			
 			prop.load(getServletContext().getResourceAsStream("/WEB-INF/config/prop.properties"));
+			if(!CommonUtils.checkSetup(FactoryProvider.getFactory().create(prop.getProperty("storageType"))))
+			{
+				response.getWriter().println("<html><body><p>App configuration issue.The system is not able to configure itself in expected manner, Please contact your admin</p></body></html>"); 
+				
+				return;
+			}
 			String uid=request.getParameter("uid");
 			String view=request.getParameter("view");
 			if(uid==null||uid.isEmpty())
@@ -262,6 +269,12 @@ public class Upload extends HttpServlet {
 			log.info("Request to update the file");
 			Properties prop = new Properties();
 			prop.load(getServletContext().getResourceAsStream("/WEB-INF/config/prop.properties"));
+			if(!CommonUtils.checkSetup(FactoryProvider.getFactory().create(prop.getProperty("storageType"))))
+			{
+				response.getWriter().println("<html><body><p>App configuration issue.The system is not able to configure itself in expected manner, Please contact your admin</p></body></html>"); 
+				
+				return;
+			}
 			long maxFileSize = Integer.parseInt((String) prop.get("maxFileSize"));
 			DiskFileItemFactory factory = new DiskFileItemFactory();
 			ServletFileUpload upload = new ServletFileUpload(factory);
@@ -411,9 +424,14 @@ public class Upload extends HttpServlet {
 		
 		
 		try {
-			System.out.println(1234);
 			Properties prop = new Properties();
 			prop.load(getServletContext().getResourceAsStream("/WEB-INF/config/prop.properties"));
+			if(!CommonUtils.checkSetup(FactoryProvider.getFactory().create(prop.getProperty("storageType"))))
+			{
+				response.getWriter().println("<html><body><p>App configuration issue.The system is not able to configure itself in expected manner, Please contact your admin</p></body></html>"); 
+				
+				return;
+			}
 			System.setProperty("propfile", getServletContext().getContextPath()+"/WEB-INF/config/prop.properties");
 			String uid=request.getParameter("uid");
 			if(uid==null||uid.isEmpty())
@@ -435,8 +453,6 @@ public class Upload extends HttpServlet {
 				//Show document
 				log.info(" Trying to display the file in response");
 				data.notes="File Deleted succesfully. file path:"+data.location;
-				System.out.println(data);
-					System.out.println(data.name);
 				//t.showFile(data.name,response);
 					response.setContentType("application/json");
 					response.setCharacterEncoding("UTF-8");
@@ -470,7 +486,6 @@ public class Upload extends HttpServlet {
 		if(checkMime)
 		{
 		String mimeType = getServletContext().getMimeType(name);
-		System.out.println(mimeType);
 		for(String ext:whitelistArrMime)
 		{
 			if(mimeType.equals(ext))
@@ -489,9 +504,7 @@ public class Upload extends HttpServlet {
 	
 	public void failIfDirectoryTraversal(String relativePath)
 	{
-		System.out.println(relativePath);
 	    File file = new File(relativePath);
-	    System.out.println(file.isAbsolute());
 	    if (file.isAbsolute())
 	    {
 	    //	log.error("Directory traversal attempt - absolute path not allowed");

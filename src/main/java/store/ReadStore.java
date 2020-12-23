@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.GsonBuilder;
 
+import utils.CommonUtils;
 import utils.FactoryProvider;
 import utils.FileData;
 import utils.StorageType;
@@ -43,6 +44,12 @@ public class ReadStore extends HttpServlet {
 			prop.load(getServletContext().getResourceAsStream("/WEB-INF/config/prop.properties"));
 			
 			StorageType t = FactoryProvider.getFactory().create(prop.getProperty("storageType"));
+			if(!CommonUtils.checkSetup(FactoryProvider.getFactory().create(prop.getProperty("storageType"))))
+			{
+				response.getWriter().println("<html><body><p>App configuration issue.The system is not able to configure itself in expected manner, Please contact your admin</p></body></html>"); 
+				
+				return;
+			}
 			FileData[] data=t.getAllDetails();
 			if(data==null)
 			{

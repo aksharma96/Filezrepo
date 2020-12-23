@@ -58,18 +58,24 @@ public class CommonUtils {
 	{
 		try {
 			Properties prop =readPropFile(t);
-			StorageType type = FactoryProvider.getFactory().create(prop.getProperty("storageType"));
-			if(type.toString().trim().equals(FileFactory.S3_STORAGE.trim()))
+			System.out.println("request to check validity of setup"+prop.getProperty("storageType"));
+			if(FileFactory.S3_STORAGE.trim().toString().trim().equals(prop.getProperty("storageType")  ))
 			{
-
+				System.out.println("setup is s3");
 				AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
 						.withRegion(prop.getProperty("region"))
 						.build();
-				s3Client.getS3AccountOwner();
+				
+				s3Client.listObjects(prop.getProperty("s3Bucket")).getBucketName();
 			}
+			System.out.println(prop.getProperty("allowedExtensions").isEmpty());
+			System.out.println(prop.getProperty("allowedMime").isEmpty());
+			System.out.println(prop.getProperty("maxFileSize").isEmpty());
+			System.out.println(prop.getProperty("storageType").isEmpty());
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			return false;
 		}
 		return true;

@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import utils.CommonUtils;
 import utils.FactoryProvider;
 import utils.FileData;
 import utils.StorageType;
@@ -37,6 +39,12 @@ public class View extends HttpServlet {
 			Properties prop = new Properties();
 			prop.load(getServletContext().getResourceAsStream("/WEB-INF/config/prop.properties"));
 			String uid=request.getParameter("uid");
+			if(!CommonUtils.checkSetup(FactoryProvider.getFactory().create(prop.getProperty("storageType"))))
+			{
+				response.getWriter().println("<html><body><p>App configuration issue.The system is not able to configure itself in expected manner, Please contact your admin</p></body></html>"); 
+				
+				return;
+			}
 			if(uid==null||uid.isEmpty())
 			{
 				response.getWriter().write("<html><body><h1>OOPS!!!</h1><p>Invalid Data. Please pass the right parameter value as mentioned in API doc</p></body></html>");
